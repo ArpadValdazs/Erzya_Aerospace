@@ -3,31 +3,16 @@ from Model.services.Splitter import Splitter
 
 
 class LoadsCalc:
-    def __init__(self, length, loads, seal, temp):
+    def __init__(self, length, loads, temp, areas):
         self.length = length
         self.loads = loads
-        self.seal = seal
         self.temp = temp
+        self.areas = areas
 
-    def seal_calc(self):
-        lengths = []
-        r = 0
-
-        for load in self.loads:
-            load_length = load[1][1]-load[1][0]
-            if load_length == 0:
-                load_length = 1
-            lengths.append(load_length)
-
-        for i in range(len(lengths)):
-            r += -self.loads[i][0]*lengths[i]
-        return r
-
-    def loads_calc(self):
+    def loads_calc(self, finish_loads):
         # output: [Y,X]. That's uncorrectable mistake
-        finish_loads = [[[0, self.seal_calc()], [0, 0]]]
         splitter = Splitter(self.loads)
-        load = splitter.split_loads()
+        load = splitter.call_splitter()
         for i in range(len(load)):
             section_length = load[i][1][1] - load[i][1][0]
             if section_length > 0:
@@ -42,3 +27,4 @@ class LoadsCalc:
             if (loads[i][1][1] != loads[i+1][1][0]) & (loads[i+1][0][0] == loads[i][0][1]):
                 loads.append([[loads[i][0][1], loads[i+1][0][0]], [loads[i][1][1], loads[i+1][1][0]]])
         return loads
+

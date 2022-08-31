@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from CalcLib import Divider
+from CalcLib import Separator
 
 
 class Plotter:
@@ -11,9 +11,9 @@ class Plotter:
 
     def loads_graph(self):
         # Closed interval from length
-        # All loads should be divided on concentrated and distributed
-        divider = Divider.Divider(self.loads, "no_loads")
-        points, intervals, no_loads = divider.call_divider()[0], divider.call_divider()[1], divider.call_divider()[2]
+        # All field should be divided on concentrated and distributed
+        divider = Separator.Separator(self.loads, "vectorless")
+        points, intervals, no_loads = divider.call_separator()[0], divider.call_separator()[1], divider.call_separator()[2]
         print("no_loads", no_loads)
         x_mass = []
         y_mass = []

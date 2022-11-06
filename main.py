@@ -1,6 +1,8 @@
 from Model.LongitudinalCalc.LongitudinalCalc import LongitudinalCalc
-from flask import Flask, render_template, make_response
+from flask import Flask, render_template, make_response, request
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import sessionmaker, Session
+#from Model.database.Users import Users
 from datetime import datetime
 
 app = Flask(__name__)
@@ -9,19 +11,19 @@ app.config['SECRET_KEY'] = "aas1ert55t523fwqed123"
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///c:/Users/Пользователь/PycharmProjects/ErzyaAerospace/my_db/mysql.db'
 
 db = SQLAlchemy(app)
+session = sessionmaker(bind='engine')
 
+class Users (db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(60), nullable=False)
+    role = db.Column(db.String(20), nullable = False)
+    calculations = db.relationship('Calculations', backref='author', lazy=True)
 
-class Post(db.Model):
-    __tablename__ = 'posts'
-    id = db.Column(db.Integer(), primary_key=True)
-    title = db.Column(db.String(255), nullable=False)
-    slug = db.Column(db.String(255), nullable=False)
-    content = db.Column(db.Text(), nullable=False)
-    created_on = db.Column(db.DateTime(), default=datetime.utcnow)
-    updated_on = db.Column(db.DateTime(), default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    def __repr__(self):
-        return "<{}:{}>".format(self.id,  self.title[:10])
+class Calculations (db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 # Create A Model For Table
 
@@ -29,6 +31,38 @@ class Post(db.Model):
 def index():
     print("ASD")
     return render_template('index.html')
+
+@app.route('/login', methods=['post', 'get'])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+    session = Session()
+
+    c1 = Users(
+        username="aaa",
+        password="adasdf",
+        email="adasd@asdf",
+        role="user"
+    )
+
+    session.add(c1)
+    session.commit()
+
+    user = session.query(Users).filter(Users.username == "aaa")
+    print(user)
+
+    return render_template('login.html')
+
+
+@app.route('/signin', methods=['post', 'get'])
+def signin():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        email = request.form.get('email')
+    return render_template('signin.html')
 
 @app.route('/longitude')
 def longitude():
